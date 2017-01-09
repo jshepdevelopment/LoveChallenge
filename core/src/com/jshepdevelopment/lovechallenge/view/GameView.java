@@ -13,18 +13,21 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.jshepdevelopment.lovechallenge.screens.EndScreen;
 
 import java.util.ArrayList;
 
-public class GameView {
+public class GameView  {
 
     private Game game;
     private BitmapFont gameFont;
     private boolean ending = false;
     public SpriteBatch batch;
     private Vector2 touchedArea = new Vector2();
+
+    private static final float SIZE = 1.0f;
 
     private TextureRegion backgroundTexture;
     private TextureRegion playerOneTexture;
@@ -33,6 +36,7 @@ public class GameView {
     private Sprite playerOneSprite;
     private Sprite playerTwoSprite;
 
+    private Circle p1Circle;
     private ParticleEffect effect;
     private ArrayList<ParticleEffect> effects = new ArrayList<ParticleEffect>();
     private Sound eatSound;
@@ -56,19 +60,22 @@ public class GameView {
     private void loadItems() {
 
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
-
-        playerOneTexture = new TextureRegion(new Texture(Gdx.files.internal("heart300px.png")));
+        playerOneTexture = new TextureRegion(new Texture(Gdx.files.internal("heart800px.png")));
         playerTwoTexture = new TextureRegion(new Texture(Gdx.files.internal("heart300px.png")));
 
         playerOneSprite = new Sprite(playerOneTexture);
-        playerOneSprite.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+        playerOneSprite.setPosition(Gdx.graphics.getWidth()/2 - playerOneSprite.getWidth()/2,
+                Gdx.graphics.getHeight()/2 - playerOneSprite.getHeight()/2);
+
+        p1Circle = new Circle();
+        p1Circle.set(playerOneSprite.getX() + playerOneSprite.getWidth()/2, playerOneSprite.getY() +
+                playerOneSprite.getHeight()/2, playerOneSprite.getRegionWidth()/2);
 
         playerTwoSprite = new Sprite(playerTwoTexture);
 
         batch = new SpriteBatch();
 
         gameFont = new BitmapFont(Gdx.files.internal("fonts/white.fnt"));
-
         eatSound = Gdx.audio.newSound(Gdx.files.internal("sounds/eat.wav"));
 
         // Loading the particle effect used when snatching the food
@@ -93,35 +100,12 @@ public class GameView {
     // Render the game
     public void render(float delta)
     {
-        // Starting the timers used to place enemies on the screen at certain intervals of time
-
         // if ending reaches 0 the lives are gone and it's gameOver
         // the Ending Screen will be called
+
         if (ending == true) {
             dispose();
             game.setScreen(new EndScreen(playerOneScore, game));
-        }
-
-        if(Gdx.input.isTouched())
-        {
-
-            // Bounding box check for touch
-            if (Gdx.input.getX() > playerOneSprite.getX() &&
-                    Gdx.input.getX() + playerOneSprite.getWidth() >
-                            playerOneSprite.getX() + playerOneSprite.getWidth()) {
-
-                Gdx.app.log("JSLOG", "Heart Touched");
-            }
-
-            /*Gdx.app.log("JSLOG", "tmp.x, tmp.y: " + tmp.x + ", " + tmp.y);
-
-            Gdx.app.log("JSLOG", "playerOneSprite.getX(), gety(): " + playerOneSprite.getX() + ", "
-                            + playerOneSprite.getY());
-            Gdx.app.log("JSLOG", "playerOneTexture.getRegionWidth(), getRegionHeight(): " +
-                    playerOneTexture.getRegionWidth() + ", " +playerOneTexture.getRegionHeight());
-
-            Gdx.app.log("JSLOG", "textureBounds.toString: " + textureBounds.toString());
-            */
         }
 
         // Drawing everything on the screen
@@ -134,24 +118,31 @@ public class GameView {
             eff.draw(batch, delta/2);
         }
 
+
         // HUD
         gameFont.draw(batch, String.valueOf(playerOneScore), 20.0f, Gdx.graphics.getHeight()-20.0f);
-
         batch.end();
+
     }
 
     public void setTouchedArea(Vector2 area) {
         this.touchedArea = area;
         //ending = true;
+
+        if (p1Circle.contains(this.touchedArea.x, this.touchedArea.y)) {
+            Gdx.app.log("JSLOG", "heart touch detected");
+            playerOneScore++;
+        }
+
     }
 
     public void dispose() {
         batch.dispose();
         eatSound.dispose();
         effect.dispose();
-        //enemyLaserEffect.dispose();
         gameFont.dispose();
     }
+
     /**
      * Accessor
      * @return
