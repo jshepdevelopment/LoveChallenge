@@ -7,23 +7,27 @@ package com.jshepdevelopment.lovechallenge.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class EndScreen implements Screen {
 
+    FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/LadylikeBB.ttf"));
+    FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
     private TextureRegion backgroundTexture;
-    private Skin skin;
     private SpriteBatch spriteBatch;
     private int score;
 
@@ -31,7 +35,6 @@ public class EndScreen implements Screen {
     private Label heading;
     private Label scoreLabel;
     private Game game;
-    private TextureAtlas atlas;
     private Stage stage;
     private Table table;
 
@@ -60,6 +63,16 @@ public class EndScreen implements Screen {
 
     @Override
     public void show() {
+
+        parameter.size = 150;
+        parameter.color = Color.RED;
+        parameter.borderWidth = 3;
+        parameter.borderColor = Color.PINK;
+
+        BitmapFont font12 = generator.generateFont(parameter); // font size 12 pixels
+        textButtonStyle.font = font12;
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
+
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         spriteBatch = new SpriteBatch();
 
@@ -67,16 +80,15 @@ public class EndScreen implements Screen {
 
         Gdx.input.setInputProcessor(stage);
 
-        atlas = new TextureAtlas("ui/blueButtons.pack");
-        skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), atlas);
-
-        table = new Table(skin);
+        table = new Table();
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        heading = new Label("Game over!", skin);
-        scoreLabel = new Label("Your score was: "+score, skin);
+        Label.LabelStyle headingStyle = new Label.LabelStyle(font12, new Color(255, 0, 255, 255));
 
-        buttonBack = new TextButton("Try Again", skin);
+        heading = new Label("Game over!", headingStyle);
+        scoreLabel = new Label("Your score was: "+ score, headingStyle);
+
+        buttonBack = new TextButton("Try Again", textButtonStyle);
         buttonBack.pad(20);
         buttonBack.addListener(new ClickListener(){
             @Override

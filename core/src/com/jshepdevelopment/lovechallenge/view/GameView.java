@@ -7,14 +7,17 @@ package com.jshepdevelopment.lovechallenge.view;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.jshepdevelopment.lovechallenge.screens.EndScreen;
 
 import java.util.ArrayList;
@@ -22,7 +25,13 @@ import java.util.ArrayList;
 public class GameView  {
 
     private Game game;
-    private BitmapFont gameFont;
+
+    FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/LadylikeBB.ttf"));
+    FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+
+    private BitmapFont font12;
+
     private boolean ending = false;
     public SpriteBatch batch;
     private Vector2 touchedArea = new Vector2();
@@ -59,6 +68,15 @@ public class GameView  {
     // Loading all the necessary items
     private void loadItems() {
 
+        parameter.size = 150;
+        parameter.color = Color.RED;
+        parameter.borderWidth = 3;
+        parameter.borderColor = Color.PINK;
+
+        font12 = generator.generateFont(parameter); // font size 12 pixels
+        textButtonStyle.font = font12;
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
+
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         playerOneTexture = new TextureRegion(new Texture(Gdx.files.internal("heart800px.png")));
         playerTwoTexture = new TextureRegion(new Texture(Gdx.files.internal("heart300px.png")));
@@ -75,7 +93,6 @@ public class GameView  {
 
         batch = new SpriteBatch();
 
-        gameFont = new BitmapFont(Gdx.files.internal("fonts/white.fnt"));
         eatSound = Gdx.audio.newSound(Gdx.files.internal("sounds/eat.wav"));
 
         // Loading the particle effect used when snatching the food
@@ -118,9 +135,8 @@ public class GameView  {
             eff.draw(batch, delta/2);
         }
 
-
         // HUD
-        gameFont.draw(batch, String.valueOf(playerOneScore), 20.0f, Gdx.graphics.getHeight()-20.0f);
+        font12.draw(batch, String.valueOf(playerOneScore), 20.0f, Gdx.graphics.getHeight()-80.0f);
         batch.end();
 
     }
@@ -134,13 +150,17 @@ public class GameView  {
             playerOneScore++;
         }
 
+        if (playerOneScore >= 10) {
+            ending = true;
+        }
+
+
     }
 
     public void dispose() {
         batch.dispose();
         eatSound.dispose();
         effect.dispose();
-        gameFont.dispose();
     }
 
     /**
