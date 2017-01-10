@@ -36,7 +36,6 @@ public class MenuScreen implements Screen{
     private Table table;
     private TextButton buttonExit, buttonPlay;
     private Label heading;
-    private BitmapFont title;
 
     public MenuScreen (Game game) {
         this.game = game;
@@ -50,7 +49,6 @@ public class MenuScreen implements Screen{
         stage.act(delta);
         batch.begin();
         batch.setColor(Color.WHITE);
-        //		bckRenderer.render(-1);
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
         stage.draw();

@@ -26,41 +26,33 @@ public class GameView  {
 
     private Game game;
 
-    FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/LadylikeBB.ttf"));
-    FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-    TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+    private FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/LadylikeBB.ttf"));
+    private FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    private TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
 
     private BitmapFont font12;
 
     private boolean ending = false;
-    public SpriteBatch batch;
-    private Vector2 touchedArea = new Vector2();
+    private SpriteBatch batch;
 
     private static final float SIZE = 1.0f;
 
-    private TextureRegion backgroundTexture;
-    private TextureRegion playerOneTexture;
-    private TextureRegion playerTwoTexture;
-
     private Sprite playerOneSprite;
     private Sprite playerTwoSprite;
+    private TextureRegion backgroundTexture;
 
     private Circle p1Circle;
     private ParticleEffect effect;
     private ArrayList<ParticleEffect> effects = new ArrayList<ParticleEffect>();
     private Sound eatSound;
 
-    public int playerOneScore;
-    public float playerOneTime;
+    private int playerOneScore;
+    private float playerOneTime;
 
-    public int playerTwoScore;
-    public float playerTwoTime;
-
-
-    private static GameView instance = null;
+    private int playerTwoScore;
+    private float playerTwoTime;
 
     public GameView(Game game) {
-        instance = this;
         this.game = game;
         loadItems();
     }
@@ -77,10 +69,12 @@ public class GameView  {
         textButtonStyle.font = font12;
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
-        backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
+        TextureRegion playerOneTexture;
+        TextureRegion playerTwoTexture;
         playerOneTexture = new TextureRegion(new Texture(Gdx.files.internal("heart800px.png")));
         playerTwoTexture = new TextureRegion(new Texture(Gdx.files.internal("heart300px.png")));
 
+        backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         playerOneSprite = new Sprite(playerOneTexture);
         playerOneSprite.setPosition(Gdx.graphics.getWidth()/2 - playerOneSprite.getWidth()/2,
                 Gdx.graphics.getHeight()/2 - playerOneSprite.getHeight()/2);
@@ -101,26 +95,15 @@ public class GameView  {
         effect.setPosition(0, 0);
         effect.start();
 
-        // Loading the enemy laser particle effect
-        //enemyLaserEffect = new ParticleEffect();
-        //enemyLaserEffect.load(Gdx.files.internal("effects/enemylaser.p"), Gdx.files.internal("effects"));
-        //enemyLaserEffect.setPosition(0, 0);
-        //enemyLaserEffect.start();
-
     }
 
-	/*
-	 * Render fields
-	 */
-
-    //private float timePassed = 0.0f;
     // Render the game
     public void render(float delta)
     {
         // if ending reaches 0 the lives are gone and it's gameOver
         // the Ending Screen will be called
 
-        if (ending == true) {
+        if (ending) {
             dispose();
             game.setScreen(new EndScreen(playerOneScore, game));
         }
@@ -142,19 +125,17 @@ public class GameView  {
     }
 
     public void setTouchedArea(Vector2 area) {
-        this.touchedArea = area;
-        //ending = true;
 
-        if (p1Circle.contains(this.touchedArea.x, this.touchedArea.y)) {
+        // Check for touch within bounding circle and increase score
+        if (p1Circle.contains(area.x, area.y)) {
             Gdx.app.log("JSLOG", "heart touch detected");
             playerOneScore++;
         }
 
+        // Remove after debug
         if (playerOneScore >= 10) {
             ending = true;
         }
-
-
     }
 
     public void dispose() {
@@ -163,12 +144,4 @@ public class GameView  {
         effect.dispose();
     }
 
-    /**
-     * Accessor
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static final <T extends GameView> T get() {
-        return (T) instance;
-    }
 }
