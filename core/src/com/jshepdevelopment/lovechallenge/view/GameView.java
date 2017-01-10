@@ -42,7 +42,8 @@ public class GameView  {
     private TextureRegion backgroundTexture;
 
     private Circle p1Circle;
-    private ParticleEffect effect;
+    private ParticleEffect heartBoomEffect;
+    private ParticleEffect heartFlashEffect;
     private ArrayList<ParticleEffect> effects = new ArrayList<ParticleEffect>();
     private Sound eatSound;
 
@@ -90,18 +91,39 @@ public class GameView  {
         eatSound = Gdx.audio.newSound(Gdx.files.internal("sounds/eat.wav"));
 
         // Loading the particle effect used when snatching the food
-        effect = new ParticleEffect();
-        effect.load(Gdx.files.internal("effects/mist.p"), Gdx.files.internal("effects"));
-        effect.setPosition(0, 0);
-        effect.start();
+        heartBoomEffect = new ParticleEffect();
+        heartBoomEffect.load(Gdx.files.internal("effects/heartparticle.p"), Gdx.files.internal("effects"));
+        heartBoomEffect.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+        heartBoomEffect.start();
+
+        heartFlashEffect = new ParticleEffect();
+        heartFlashEffect.load(Gdx.files.internal("effects/heartflash.p"), Gdx.files.internal("effects"));
+        heartFlashEffect.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+        heartFlashEffect.start();
 
     }
+
+    private float theTimer = 0.0f;
+    int heartFlashTimerCount = 0;
+    double[] heartFlashTimer = new double[heartFlashTimerCount];
 
     // Render the game
     public void render(float delta)
     {
         // if ending reaches 0 the lives are gone and it's gameOver
         // the Ending Screen will be called
+
+        /*for(int i = 0; i < heartFlashTimerCount; i ++) {
+            heartFlashTimer[i] += delta;
+            Gdx.app.log("JSLOG", "heartFlashTimer[i]: " + heartFlashTimer[i]);
+
+            if(heartFlashTimer[i] > 1.0f) {
+
+                effects.remove(heartFlashEffect);
+            }
+        }*/
+
+        theTimer += delta;
 
         if (ending) {
             dispose();
@@ -113,13 +135,17 @@ public class GameView  {
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         playerOneSprite.draw(batch);
 
-        // Displaying the particle effects
+        // Displaying the heart boom particle effects
         for (ParticleEffect eff : effects) {
             eff.draw(batch, delta/2);
         }
+        //heartBoomEffect.draw(batch, delta/2);
 
         // HUD
-        font12.draw(batch, String.valueOf(playerOneScore), 20.0f, Gdx.graphics.getHeight()-80.0f);
+        font12.draw(batch, String.valueOf(playerOneScore), Gdx.graphics.getWidth()/2 -
+                Gdx.graphics.getWidth()/3, Gdx.graphics.getHeight()-100.0f);
+        font12.draw(batch, String.valueOf((int)theTimer), Gdx.graphics.getWidth()/2 +
+                Gdx.graphics.getWidth()/3, Gdx.graphics.getHeight()-100.0f);
         batch.end();
 
     }
@@ -128,12 +154,30 @@ public class GameView  {
 
         // Check for touch within bounding circle and increase score
         if (p1Circle.contains(area.x, area.y)) {
-            Gdx.app.log("JSLOG", "heart touch detected");
+
+            // Updating the sweet graphics
+            //Gdx.app.log("JSLOG", "heart touch detected");
+
+            if(effects.contains(heartBoomEffect)) {
+                effects.remove(heartBoomEffect);
+            }
+            effects.add(heartBoomEffect);
+            heartBoomEffect.start();
+
+            if(effects.contains(heartFlashEffect)) {
+                effects.remove(heartFlashEffect);
+            }
+
+            effects.add(heartFlashEffect);
+            heartFlashEffect.start();
+
+            heartFlashTimerCount++;
             playerOneScore++;
+
         }
 
         // Remove after debug
-        if (playerOneScore >= 10) {
+        if ((int)theTimer >= 10) {
             ending = true;
         }
     }
@@ -141,7 +185,7 @@ public class GameView  {
     public void dispose() {
         batch.dispose();
         eatSound.dispose();
-        effect.dispose();
+        heartBoomEffect.dispose();
     }
 
 }
