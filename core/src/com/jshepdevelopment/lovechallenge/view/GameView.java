@@ -92,7 +92,7 @@ public class GameView  {
 
         // Loading the particle effect used when snatching the food
         heartBoomEffect = new ParticleEffect();
-        heartBoomEffect.load(Gdx.files.internal("effects/heartparticle.p"), Gdx.files.internal("effects"));
+        heartBoomEffect.load(Gdx.files.internal("effects/heartboom.p"), Gdx.files.internal("effects"));
         heartBoomEffect.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
         heartBoomEffect.start();
 
@@ -104,8 +104,7 @@ public class GameView  {
     }
 
     private float theTimer = 0.0f;
-    int heartFlashTimerCount = 0;
-    double[] heartFlashTimer = new double[heartFlashTimerCount];
+    private boolean p1Move = false;
 
     // Render the game
     public void render(float delta)
@@ -113,17 +112,13 @@ public class GameView  {
         // if ending reaches 0 the lives are gone and it's gameOver
         // the Ending Screen will be called
 
-        /*for(int i = 0; i < heartFlashTimerCount; i ++) {
-            heartFlashTimer[i] += delta;
-            Gdx.app.log("JSLOG", "heartFlashTimer[i]: " + heartFlashTimer[i]);
-
-            if(heartFlashTimer[i] > 1.0f) {
-
-                effects.remove(heartFlashEffect);
-            }
-        }*/
-
         theTimer += delta;
+
+        if (p1Move) {
+            playerOneSprite.setPosition(playerOneSprite.getX(), playerOneSprite.getY() - 25);
+            p1Move = false;
+        }
+
 
         if (ending) {
             dispose();
@@ -139,7 +134,6 @@ public class GameView  {
         for (ParticleEffect eff : effects) {
             eff.draw(batch, delta/2);
         }
-        //heartBoomEffect.draw(batch, delta/2);
 
         // HUD
         font12.draw(batch, String.valueOf(playerOneScore), Gdx.graphics.getWidth()/2 -
@@ -147,7 +141,7 @@ public class GameView  {
         font12.draw(batch, String.valueOf((int)theTimer), Gdx.graphics.getWidth()/2 +
                 Gdx.graphics.getWidth()/3, Gdx.graphics.getHeight()-100.0f);
         batch.end();
-
+        playerOneSprite.setPosition(playerOneSprite.getX(), Gdx.graphics.getHeight()/2 - playerOneSprite.getHeight()/2);
     }
 
     public void setTouchedArea(Vector2 area) {
@@ -155,29 +149,32 @@ public class GameView  {
         // Check for touch within bounding circle and increase score
         if (p1Circle.contains(area.x, area.y)) {
 
-            // Updating the sweet graphics
-            //Gdx.app.log("JSLOG", "heart touch detected");
+            p1Move = true;
 
+            // Updating the sweet graphics
+            Gdx.app.log("JSLOG", "effects.size()" + effects.size());
+
+            // Remove from array list first
             if(effects.contains(heartBoomEffect)) {
                 effects.remove(heartBoomEffect);
             }
-            effects.add(heartBoomEffect);
-            heartBoomEffect.start();
-
             if(effects.contains(heartFlashEffect)) {
                 effects.remove(heartFlashEffect);
             }
 
-            effects.add(heartFlashEffect);
-            heartFlashEffect.start();
+            heartBoomEffect.start();
+            effects.add(heartBoomEffect);
 
-            heartFlashTimerCount++;
+            heartFlashEffect.start();
+            effects.add(heartFlashEffect);
+
+
             playerOneScore++;
 
         }
 
         // Remove after debug
-        if ((int)theTimer >= 10) {
+        if (theTimer >= 25.0) {
             ending = true;
         }
     }
