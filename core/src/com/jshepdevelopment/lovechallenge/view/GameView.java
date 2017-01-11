@@ -103,7 +103,7 @@ public class GameView  {
 
     }
 
-    private float theTimer = 0.0f;
+    private float theTimer = 11.0f;
     private boolean p1Move = false;
 
     // Render the game
@@ -112,17 +112,21 @@ public class GameView  {
         // if ending reaches 0 the lives are gone and it's gameOver
         // the Ending Screen will be called
 
-        theTimer += delta;
+        theTimer -= delta;
 
-        if (p1Move) {
-            playerOneSprite.setPosition(playerOneSprite.getX(), playerOneSprite.getY() - 25);
-            p1Move = false;
+        if (theTimer <= 0.0) {
+            ending = true;
         }
-
 
         if (ending) {
             dispose();
             game.setScreen(new EndScreen(playerOneScore, game));
+        }
+
+        // update heart movement
+        if (p1Move) {
+            playerOneSprite.setPosition(playerOneSprite.getX(), playerOneSprite.getY() - 25);
+            p1Move = false;
         }
 
         // Drawing everything on the screen
@@ -173,10 +177,6 @@ public class GameView  {
 
         }
 
-        // Remove after debug
-        if (theTimer >= 25.0) {
-            ending = true;
-        }
     }
 
     public void dispose() {
