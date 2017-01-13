@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.jshepdevelopment.lovechallenge.LoveChallenge;
 
 public class EndScreen implements Screen {
 
@@ -31,16 +32,19 @@ public class EndScreen implements Screen {
     private SpriteBatch spriteBatch;
     private int score;
 
-    private TextButton buttonBack;
+    private TextButton buttonBack, buttonScore;
     private Label heading;
     private Label scoreLabel;
     private Game game;
     private Stage stage;
     private Table table;
 
-    public EndScreen(int score, Game game) {
+    public static LoveChallenge loveChallengeGame;
+
+    public EndScreen(int score, Game game, LoveChallenge loveChallengeGame) {
         this.score = score;
         this.game = game;
+        this.loveChallengeGame = loveChallengeGame;
     }
 
     @Override
@@ -63,6 +67,9 @@ public class EndScreen implements Screen {
 
     @Override
     public void show() {
+
+        // Submit the score to play services
+        loveChallengeGame.playServices.submitScore(score);
 
         parameter.size = 150;
         parameter.color = Color.RED;
@@ -93,18 +100,32 @@ public class EndScreen implements Screen {
         buttonBack.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MenuScreen(game));
+                game.setScreen(new MenuScreen(game, loveChallengeGame));
+            }
+        });
+
+        buttonScore = new TextButton("High Scores", textButtonStyle);
+        buttonScore.pad(20);
+        buttonScore.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                loveChallengeGame.playServices.showScore();
+                //game.setScreen(new MenuScreen(game, loveChallengeGame));
             }
         });
 
         table.add(heading);
-        table.getCell(heading).spaceBottom(250);
+        table.getCell(heading).spaceBottom(150);
         table.row();
         table.add(scoreLabel);
         table.getCell(scoreLabel).spaceBottom(100);
         table.row();
         table.add(buttonBack);
+        table.getCell(buttonBack).spaceBottom(100);
+        table.row();
+        table.add(buttonScore);
         stage.addActor(table);
+
     }
 
     @Override

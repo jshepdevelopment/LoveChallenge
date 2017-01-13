@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_id">348206547793</string>
+    <string name="package_name">com.jshepdevelopment.lovechallenge</string>
+    <string name="achievement_10_taps">CgkI0YbplZEKEAIQCA</string>
+    <string name="achievement_25_taps">CgkI0YbplZEKEAIQCQ</string>
+    <string name="achievement_50_taps">CgkI0YbplZEKEAIQCg</string>
+    <string name="achievement_80_taps">CgkI0YbplZEKEAIQCw</string>
+    <string name="achievement_lucky_88">CgkI0YbplZEKEAIQDA</string>
+    <string name="achievement_100_taps">CgkI0YbplZEKEAIQDQ</string>
+    <string name="achievement_200_taps">CgkI0YbplZEKEAIQDg</string>
+    <string name="leaderboard_the_leader">CgkI0YbplZEKEAIQDw</string>
+    <string name="leaderboard_the_lesser_leader">CgkI0YbplZEKEAIQEA</string>
+    <string name="leaderboard_the_duke">CgkI0YbplZEKEAIQEQ</string>
+</resources>

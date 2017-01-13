@@ -21,10 +21,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.jshepdevelopment.lovechallenge.LoveChallenge;
 
 public class MenuScreen implements Screen{
 
     private Game game;
+    public static LoveChallenge loveChallengeGame;
 
     FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/LadylikeBB.ttf"));
     FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -34,11 +36,15 @@ public class MenuScreen implements Screen{
     private SpriteBatch batch;
     private Stage stage;
     private Table table;
-    private TextButton buttonExit, buttonPlay;
+    private TextButton buttonExit, buttonPlay, buttonTest;
     private Label heading;
 
-    public MenuScreen (Game game) {
+//    public static LoveChallenge game;
+
+
+    public MenuScreen (Game game, LoveChallenge loveChallengeGame) {
         this.game = game;
+        this.loveChallengeGame = loveChallengeGame;
     }
 
     @Override
@@ -102,18 +108,32 @@ public class MenuScreen implements Screen{
             }
         });
 
+        //Button TEST for testing Google Play Services
+        buttonTest = new TextButton("Test Achievements", textButtonStyle);
+        buttonTest.pad(20);
+        buttonTest.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                //Gdx.app.exit();
+                loveChallengeGame.playServices.showAchievement();
+            }
+        });
+
         LabelStyle headingStyle = new LabelStyle(font12, new Color(255, 0, 255, 255));
         heading = new Label("Valentine's Day Love Challenge", headingStyle);
 
         //putting all that into a table
         table.add(heading);
-        table.getCell(heading).spaceBottom(200);
+        table.getCell(heading).spaceBottom(100);
         table.row();
         table.add(buttonPlay);
         table.getCell(buttonPlay).spaceBottom(20);
         table.row();
         table.add(buttonExit);
         table.getCell(buttonExit).spaceBottom(20);
+        table.row();
+        table.add(buttonTest);
+        table.getCell(buttonTest).spaceBottom(20);
         stage.addActor(table);
 
     }

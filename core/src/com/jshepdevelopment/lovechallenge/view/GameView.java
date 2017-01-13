@@ -22,6 +22,8 @@ import com.jshepdevelopment.lovechallenge.screens.EndScreen;
 
 import java.util.ArrayList;
 
+import static com.jshepdevelopment.lovechallenge.screens.EndScreen.loveChallengeGame;
+
 public class GameView  {
 
     private Game game;
@@ -120,7 +122,7 @@ public class GameView  {
 
         if (ending) {
             dispose();
-            game.setScreen(new EndScreen(playerOneScore, game));
+            game.setScreen(new EndScreen(playerOneScore, game, loveChallengeGame));
         }
 
         // update heart movement

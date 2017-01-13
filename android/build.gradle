@@ -19,11 +19,13 @@ android {
     }
     defaultConfig {
         applicationId "com.jshepdevelopment.lovechallenge"
-        minSdkVersion 8
+        minSdkVersion 21
         targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
     }
 }
-
 
 // called every time gradle gets executed, takes the native dependencies of
 // the natives configuration, and extracts them to the proper libs/ folders
