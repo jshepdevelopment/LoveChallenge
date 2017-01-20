@@ -28,6 +28,10 @@ public class GameView  {
 
     private Game game;
 
+   public enum ScreenType {
+        LDPI, MDPI, HDPI, XHDPI, XXHDPI, XXXHDPI
+   }
+
     private FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/LadylikeBB.ttf"));
     private FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
     private TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
@@ -60,12 +64,31 @@ public class GameView  {
         loadItems();
     }
 
+    // define various screen sizes and resolutions
+    int screenWidth = Gdx.graphics.getWidth();
+
+    int baseWidth = 480;
+    float scaleModifier = 0.5f;
+    //Define the screen as MDPI as baseline
+    ScreenType screenType = ScreenType.MDPI;
+
     // Loading all the necessary items
     private void loadItems() {
 
-        parameter.size = 150;
+        if ( screenWidth <  baseWidth ) screenType = ScreenType.LDPI;
+        if ( screenWidth >= baseWidth * 1 ) screenType = ScreenType.MDPI;
+        if ( screenWidth >= baseWidth * 1.5 ) screenType = ScreenType.HDPI;
+        if ( screenWidth >= baseWidth * 2 ) screenType = ScreenType.XHDPI;
+        if ( screenWidth >= baseWidth * 3 ) screenType = ScreenType.XXHDPI;
+        if ( screenWidth >= baseWidth * 4 ) screenType = ScreenType.XXXHDPI;
+
+        Gdx.app.log("JSLOG", "screenWIdth is " + screenWidth);
+        Gdx.app.log("JSLOG", "screenType is " + screenType.toString());
+
+        // Setting the base size for font MDPI screen
+        parameter.size = 38;
+
         parameter.color = Color.RED;
-        parameter.borderWidth = 3;
         parameter.borderColor = Color.PINK;
 
         font12 = generator.generateFont(parameter); // font size 12 pixels
@@ -82,11 +105,9 @@ public class GameView  {
         playerOneSprite.setPosition(Gdx.graphics.getWidth()/2 - playerOneSprite.getWidth()/2,
                 Gdx.graphics.getHeight()/2 - playerOneSprite.getHeight()/2);
 
-        p1Circle = new Circle();
-        p1Circle.set(playerOneSprite.getX() + playerOneSprite.getWidth()/2, playerOneSprite.getY() +
-                playerOneSprite.getHeight()/2, playerOneSprite.getRegionWidth()/2);
-
         playerTwoSprite = new Sprite(playerTwoTexture);
+
+        // Scale the heart
 
         batch = new SpriteBatch();
 
@@ -103,6 +124,35 @@ public class GameView  {
         heartFlashEffect.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
         heartFlashEffect.start();
 
+
+        // Set sizes relative to screen type
+        if(screenType==ScreenType.XXXHDPI) {
+            parameter.size = 38*4;
+            playerOneSprite.scale(1);
+        }
+        if(screenType==ScreenType.XXHDPI) {
+            parameter.size = 38*3;
+            playerOneSprite.scale(0.75f);
+        }
+        if(screenType==ScreenType.XHDPI) {
+            parameter.size = 38*2;
+            playerOneSprite.scale(0.50f);
+        }
+        if(screenType==ScreenType.HDPI) {
+            parameter.size = 38*2;
+            playerOneSprite.scale(0.35f);
+        }
+        if(screenType==ScreenType.MDPI) {
+            parameter.size = 38;
+            playerOneSprite.scale(0.25f);
+        }
+        if(screenType==ScreenType.LDPI) {
+            parameter.size = 30;
+        }
+
+        p1Circle = new Circle();
+        p1Circle.set(playerOneSprite.getX() + playerOneSprite.getWidth()/2, playerOneSprite.getY() +
+                playerOneSprite.getHeight()/2, playerOneSprite.getRegionWidth()/2);
     }
 
     private float theTimer = 11.0f;
